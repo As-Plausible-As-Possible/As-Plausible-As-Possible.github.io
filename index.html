@@ -59,14 +59,21 @@
       <div class="columns is-centered">
         <div class="column has-text-centered">
           <h1 class="title is-1 publication-title">As-Plausible-As-Possible: Semantic-Aware Shape Deformation using 2D Diffusion Priors</h1>
-          <div style="font-size:x-large;">Preview</div><br>
+          <!-- <div style="font-size:x-large;">Preview</div><br> -->
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a href="https://As-Plausible-As-Possible.github.io/">Anonymous Authors</a></span>
+              <a href="https://dvelopery0115.github.io/">Seungwoo Yoo</a><sup>1</sup>*,</span>
+            <span class="author-block">
+              <a href="https://Soulmates2.github.io/">Kunho Kim</a><sup>1</sup>*,</span>
+            <span class="author-block">
+              <a href="http://www.vovakim.com/">Vladimir G. Kim</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://mhsung.github.io/">Minhyuk Sung</a><sup>1</sup></span>
           </div>
 
           <div class="is-size-5 publication-authors">
-            <span class="author-block"></span>
+            <span class="author-block"><sup>1</sup>KAIST,</span>
+            <span class="author-block"><sup>2</sup>Adobe Research</span>
           </div>
 
           <div class="column has-text-centered">
@@ -78,18 +85,28 @@
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
                   </span>
-                  <span>Main Paper</span>
+                  <span>PDF</span>
                 </a>
               </span>
-              <!-- Supplementary PDF Link. -->
+              <!-- arXiv Link. -->
               <span class="link-block">
-                <a href="static/APAP_supp.pdf"
+                <a href="https://as-plausible-as-possible.github.io/"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
+                    <i class="ai ai-arxiv"></i>
                   </span>
-                  <span>Supplementary</span>
+                  <span>arXiv</span>
                 </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://as-plausible-as-possible.github.io/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
               </span>
             </div>
           </div>
@@ -103,10 +120,11 @@
 <!-- ========== Teaser ========== -->
 <div class="container">
   <div class="content is-max-desktop">
-    <img src="static/images/Teaser.png">
+    <img src="static/images/teaser.png">
     <p>
-      <b><span class="dnerf">APAP</span>, a novel shape deformation method that results in plausible and realistic deformed mesh, that cannot be achieved by previous mesh deformation method, while enabling the preservation of fine details from the original mesh through the Jacobian fields and the Score Distillation Sampling loss. 
-        Given an 2D image or 3D mesh, the user clicks a handle point(\Red{red}) and a target point(\Blue{blue}).
+      <b>APAP</b>, our novel shape deformation method, enables plausibility-aware mesh deformation and preservation 
+      of fine details of the original mesh offering an interface that alters geometry by directly displacing
+      a handle (<i style="color: #ff0000; ">red</i>) along a direction (<i style="color: #727272; ">gray</i>).
     </p>
   </div>
 </div>
@@ -119,14 +137,20 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            We propose <span class="dnerf">APAP</span>.
+            We present As-Plausible-as-Possible (<b>APAP</b>) mesh deformation technique that leverages 
+            2D diffusion priors to preserve the plausibility of a mesh under user-controlled deformation. 
+            Our framework uses per-face Jacobians to represent mesh deformations, where mesh vertex coordinates 
+            are computed via a differentiable Poisson Solve. The deformed mesh is rendered, and the resulting 
+            2D image is used in the Score Distillation Sampling (SDS) process, which enables extracting meaningful 
+            plausibility priors from a pretrained 2D diffusion model. To better preserve the identity of the edited 
+            mesh, we fine-tune our 2D diffusion model with LoRA. Gradients extracted by SDS and a user-prescribed 
+            handle displacement are then backpropagated to the per-face Jacobians, and we use iterative gradient 
+            descent to compute the final deformation that balances between the user edit and the output plausibility. 
+            We evaluate our method with 2D and 3D meshes and demonstrate qualitative and quantitative improvements 
+            when using plausibility priors over geometry-preservation or distortion-minimization priors used by 
+            previous techniques. 
           </p>
         </div>
-      </div>
-    </div>
-    <div class="container">
-      <div class="content has-text-centered">
-        <img src="./static/images/Method.png" alt="our_approach" style="max-width:100%;">
       </div>
     </div>
   </div>
@@ -139,11 +163,18 @@
     <div class="columns is-centered has-text-centered is-flex-direction-column">
       <h2 class="title is-3">Method</h2>
       <br>
-      <img src="./static/images/Method.png" alt="reformulation" style="max-width:100%;">
+      <img src="./static/images/method.png" alt="reformulation" style="max-width:100%;">
       <br>
       <div class="content has-text-justified">
         <p>
-          We utilize Neural Jacobian Fields and SDS (Score Distillation Sampling) Loss.       
+          <b>APAP</b> parameterizes a triangular mesh as a per-face Jacobian field that can be updated via
+          gradient descent. Given a textured mesh and user inputs specifying the handle(s) and anchor(s), 
+          our framework initializes a Jacobian field as a trainable parameter. During the first stage, the 
+          Jacobian field is updated via iterative optimization of $L_h$, a soft constraint that initially deforms 
+          the shape according to the user's instruction. In the following stage, the mesh is rendered using 
+          a differentiable renderer $R$ and the rendered image is provided as an input to a diffusion prior 
+          finetuned with LoRA that computes the SDS loss $L_{SDS}$. The joint optimization of $L_h$ and $L_{SDS}$ 
+          improves the visual plausibility of the mesh while conforming to the given edit instruction.
         </p>
       </div>
     </div>
@@ -153,19 +184,18 @@
 
 
 
-<!-- ========== 2D Results ========== -->
+<!-- ========== 3D Results ========== -->
 <section class="hero teaser">
   <div class="columns is-centered has-text-centered is-flex-direction-column"><br>
-    <h2 class="title is-3">Qualitative Comparisons on 2D images</h2>
+    <h2 class="title is-3">Qualitative Results from 3D Shape Deformation</h2>
   </div>
   <div class="container is-max-desktop">
     <p>
-      <span class="dnerf">APAP</span> can deform well! 
     </p>
   </div>
   <div class="columns is-centered has-text-centered is-flex-direction-column">
     <div class="container" style="width:80%;">
-      <img src="./static/images/2D_results.png" alt="2D_results" style="max-width:85%;">
+      <img src="./static/images/3D_results.png" alt="3D_results" style="max-width:85%;">
       <h2 class="subtitle has-text-centered">
         
       </h2>
@@ -175,19 +205,18 @@
 </section><br><br><hr>
 
 
-<!-- ========== 3D Results ========== -->
+<!-- ========== 2D Results ========== -->
 <section class="hero teaser">
   <div class="columns is-centered has-text-centered is-flex-direction-column"><br>
-    <h2 class="title is-3">Qualitative Comparisons on 3D Shapes</h2>
+    <h2 class="title is-3">Qualitative Comparisons on 2D Mesh Deformation</h2>
   </div>
   <div class="container is-max-desktop">
     <p>
-      <span class="dnerf">APAP</span> can deform well! 
     </p>
   </div>
   <div class="columns is-centered has-text-centered is-flex-direction-column">
     <div class="container" style="width:80%;">
-      <img src="./static/images/3D_results.png" alt="3D_results" style="max-width:85%;">
+      <img src="./static/images/2D_results.png" alt="2D_results" style="max-width:85%;">
       <h2 class="subtitle has-text-centered">
         
       </h2>
